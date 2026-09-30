@@ -1,22 +1,22 @@
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
-import Spinner from "ui/Spinner";
-import BookingDataBox from "./BookingDataBox";
-import Row from "ui/Row";
-import Heading from "ui/Heading";
-import Tag from "ui/Tag";
-import ButtonGroup from "ui/ButtonGroup";
-import Button from "ui/Button";
-import Modal from "ui/Modal";
-import ConfirmDelete from "ui/ConfirmDelete";
+import Spinner from 'ui/Spinner';
+import BookingDataBox from './BookingDataBox';
+import Row from 'ui/Row';
+import Heading from 'ui/Heading';
+import Tag from 'ui/Tag';
+import ButtonGroup from 'ui/ButtonGroup';
+import Button from 'ui/Button';
+import Modal from 'ui/Modal';
+import ConfirmDelete from 'ui/ConfirmDelete';
 
-import { useBooking } from "features/bookings/useBooking";
-import { useDeleteBooking } from "./useDeleteBooking";
-import { useMoveBack } from "hooks/useMoveBack";
-import { useCheckout } from "features/check-in-out/useCheckout";
-import ButtonText from "ui/ButtonText";
-import Empty from "ui/Empty";
+import { useBooking } from 'features/bookings/useBooking';
+import { useDeleteBooking } from './useDeleteBooking';
+import { useMoveBack } from 'hooks/useMoveBack';
+import { useCheckout } from 'features/check-in-out/useCheckout';
+import ButtonText from 'ui/ButtonText';
+import Empty from 'ui/Empty';
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -36,9 +36,9 @@ function BookingDetail() {
   // if (!booking) return <Empty resource='booking' />;
 
   const statusToTagName = {
-    unconfirmed: "blue",
-    "checked-in": "green",
-    "checked-out": "silver",
+    unconfirmed: 'blue',
+    'checked-in': 'green',
+    'checked-out': 'silver',
   };
 
   const { id: bookingId, status } = booking;
@@ -49,7 +49,7 @@ function BookingDetail() {
       <Row type="horizontal">
         <HeadingGroup>
           <Heading type="h1">Booking #{bookingId}</Heading>
-          <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
+          <Tag type={statusToTagName[status]}>{status.replace('-', ' ')}</Tag>
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
       </Row>
@@ -57,13 +57,13 @@ function BookingDetail() {
       <BookingDataBox booking={booking} />
 
       <ButtonGroup>
-        {status === "unconfirmed" && (
+        {status === 'unconfirmed' && (
           <Button onClick={() => navigate(`/checkin/${bookingId}`)}>
             Check in
           </Button>
         )}
 
-        {status === "checked-in" && (
+        {status === 'checked-in' && (
           <Button onClick={() => checkout(bookingId)} disabled={isCheckingOut}>
             Check out
           </Button>

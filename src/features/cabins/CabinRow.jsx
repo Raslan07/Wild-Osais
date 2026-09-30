@@ -1,13 +1,14 @@
-import styled from "styled-components";
-import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import styled from 'styled-components';
+import { HiPencil, HiSquare2Stack, HiTrash } from 'react-icons/hi2';
 
-import { formatCurrency } from "../../utils/helpers";
-import ConfirmDelete from "../../ui/ConfirmDelete";
-import Modal from "../../ui/Modal";
-import Table from "@src/ui/Table";
-import CreateCabinForm from "./CreateCabinForm";
-import { useCreateCabin } from "./useCreateCabin";
-import { useDeleteCabin } from "./useDeleteCabin";
+import { formatCurrency } from '../../utils/helpers';
+import ConfirmDelete from '../../ui/ConfirmDelete';
+import Modal from '../../ui/Modal';
+import Menus from '../../ui/Menus';
+import Table from '@src/ui/Table';
+import CreateCabinForm from './CreateCabinForm';
+import { useCreateCabin } from './useCreateCabin';
+import { useDeleteCabin } from './useDeleteCabin';
 
 const Img = styled.img`
   display: block;
@@ -22,24 +23,18 @@ const Cabin = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--color-grey-600);
-  font-family: "Sono";
+  font-family: 'Sono';
 `;
 
 const Price = styled.div`
-  font-family: "Sono";
+  font-family: 'Sono';s
   font-weight: 600;
 `;
 
 const Discount = styled.div`
-  font-family: "Sono";
+  font-family: 'Sono';
   font-weight: 500;
   color: var(--color-green-700);
-`;
-
-const Actions = styled.div`
-  display: flex;
-  gap: 0.8rem;
-  justify-content: flex-end;
 `;
 
 export default function CabinRow({ cabin }) {
@@ -48,15 +43,8 @@ export default function CabinRow({ cabin }) {
   const { createCabin } = useCreateCabin();
 
   // Extract the values displayed in the row and used by the actions.
-  const {
-    id,
-    name,
-    maxCapacity,
-    regularPrice,
-    discount,
-    description,
-    image,
-  } = cabin;
+  const { id, name, maxCapacity, regularPrice, discount, description, image } =
+    cabin;
 
   // Create a copy using the current cabin's data.
   function handleDuplicate() {
@@ -79,8 +67,8 @@ export default function CabinRow({ cabin }) {
 
   // Render the cabin details, row actions, and their modal windows.
   return (
-    <Modal>
-      <Table.Row role="row">
+    <Table.Row role="row">
+      <Modal>
         <Img src={image} alt={name} />
         <Cabin>{name}</Cabin>
         <div>Fits in up to {maxCapacity}</div>
@@ -90,43 +78,41 @@ export default function CabinRow({ cabin }) {
         ) : (
           <span>&mdash;</span>
         )}
-        <Actions>
-          {/* Open the edit form for this cabin. */}
-          <Modal.Open opens="edit-cabin">
-            <button aria-label={`Edit ${name}`}>
-              <HiPencil />
-            </button>
-          </Modal.Open>
-          {/* Duplicate the cabin immediately. */}
-          <button
-            onClick={handleDuplicate}
-            aria-label={`Duplicate ${name}`}
-          >
-            <HiSquare2Stack />
-          </button>
-          {/* Open the confirmation modal before deleting. */}
-          <Modal.Open opens="delete-cabin">
-            <button
-              disabled={isDeleting}
-              aria-label={`Delete ${name}`}
-            >
-              <HiTrash />
-            </button>
-          </Modal.Open>
-        </Actions>
-      </Table.Row>
-      {/* Edit modal receives the selected cabin as form default values. */}
-      <Modal.Window name="edit-cabin">
-        <CreateCabinForm cabinToEdit={cabin} />
-      </Modal.Window>
-      {/* Delete modal performs the mutation only after confirmation. */}
-      <Modal.Window name="delete-cabin">
-        <ConfirmDelete
-          resource="cabin"
-          onConfirm={handleDelete}
-          disabled={isDeleting}
-        />
-      </Modal.Window>
-    </Modal>
+        <Menus>
+          <Menus.Menu>
+            <Menus.Toggle id={id} />
+            <Menus.List id={id}>
+              <Menus.Button
+                icon={<HiSquare2Stack />}
+                onClick={handleDuplicate}
+              >
+                Duplicate
+              </Menus.Button>
+              <Modal.Open opens="delete-cabin">
+                <Menus.Button icon={<HiTrash />} disabled={isDeleting}>
+                  Delete
+                </Menus.Button>
+              </Modal.Open>
+              <Modal.Open opens="edit-cabin">
+                <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+              </Modal.Open>
+            </Menus.List>
+          </Menus.Menu>
+        </Menus>
+        {/* Edit modal receives the selected cabin as form default values. */}
+        <Modal.Window name="edit-cabin">
+          <CreateCabinForm cabinToEdit={cabin} />
+        </Modal.Window>
+        {/* Delete modal performs the mutation only after confirmation. */}
+        <Modal.Window name="delete-cabin">
+          <ConfirmDelete
+            resource="cabin"
+            onConfirm={handleDelete}
+            disabled={isDeleting}
+          />
+        </Modal.Window>
+      </Modal>
+
+    </Table.Row>
   );
 }

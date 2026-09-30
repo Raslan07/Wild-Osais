@@ -1,20 +1,19 @@
-import { useQuery} from "@tanstack/react-query"
-import { getCabins } from "@src/services/apiCabins";
+import { useQuery } from '@tanstack/react-query';
+import { getCabins } from '@src/services/apiCabins';
 
-
-export function useCabins() { 
-const {
+export function useCabins() {
+  const {
     data: cabins,
     isPending,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["cabins"],
+    queryKey: ['cabins'],
     queryFn: async () => {
       const cabins = await getCabins();
       return cabins;
     },
   });
 
-    return { isPending , error , isLoading , cabins}
+  return { isPending, error, isLoading, cabins };
 }

@@ -1,9 +1,8 @@
+import Table from '@src/ui/Table';
+import Spinner from '@src/ui/Spinner';
 
-import Table from "@src/ui/Table";
-import Spinner from "@src/ui/Spinner";
-
-import { useCabins } from "./useCabins";
-import CabinRow from "./CabinRow";
+import { useCabins } from './useCabins';
+import CabinRow from './CabinRow';
 
 export default function CabinTable() {
   const { isLoading, cabins } = useCabins();

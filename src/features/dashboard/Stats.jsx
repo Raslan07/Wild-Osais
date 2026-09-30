@@ -3,9 +3,9 @@ import {
   HiOutlineCalendarDays,
   HiOutlineBanknotes,
   HiOutlineChartBar,
-} from "react-icons/hi2";
-import { formatCurrency } from "utils/helpers";
-import Stat from "./Stat";
+} from 'react-icons/hi2';
+import { formatCurrency } from 'utils/helpers';
+import Stat from './Stat';
 
 function Stats({ bookings, confirmedStays, numDays, cabinCount }) {
   // Stat 1)
@@ -46,7 +46,7 @@ function Stats({ bookings, confirmedStays, numDays, cabinCount }) {
       <Stat
         icon={<HiOutlineChartBar />}
         title="Occupancy rate"
-        value={Math.round(occupation * 100) + "%"}
+        value={Math.round(occupation * 100) + '%'}
         color="yellow"
       />
     </>
