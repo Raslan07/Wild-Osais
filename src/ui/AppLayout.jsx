@@ -1,7 +1,7 @@
-import { Outlet } from "react-router";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
-import styled from "styled-components";
+import { Outlet } from 'react-router';
+import Sidebar from './Sidebar';
+import Header from './Header';
+import styled from 'styled-components';
 
 const StyledAppLayout = styled.div`
   display: grid;
@@ -19,7 +19,7 @@ const Container = styled.div`
 const Main = styled.main`
   background-color: var(--color-grey-50);
   padding: 4rem 4.8rem 6.4rem;
-  overflow:scroll;
+  overflow: scroll;
 `;
 
 function AppLayout() {

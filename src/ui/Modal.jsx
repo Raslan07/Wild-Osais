@@ -1,8 +1,8 @@
-import { cloneElement, createContext, useContext, useState } from "react";
-import { createPortal } from "react-dom";
-import { HiXMark } from "react-icons/hi2";
-import styled from "styled-components";
-import { useOutSideClick } from "../hooks/useOutSideClick";
+import { cloneElement, createContext, useContext, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { HiXMark } from 'react-icons/hi2';
+import styled from 'styled-components';
+import { useOutSideClick } from '../hooks/useOutSideClick';
 
 const StyledModal = styled.div`
   position: fixed;
@@ -56,9 +56,9 @@ const Button = styled.button`
 const ModalContext = createContext();
 
 function Modal({ children }) {
-  const [openName, setOpenName] = useState("");
+  const [openName, setOpenName] = useState('');
 
-  const close = () => setOpenName("");
+  const close = () => setOpenName('');
   const open = setOpenName;
 
   return (
@@ -90,7 +90,7 @@ function Window({ children, name }) {
         <div>{cloneElement(children, { onCloseModal: close })}</div>
       </StyledModal>
     </Overlay>,
-    document.body
+    document.body,
   );
 }
 
