@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local planning files
+COMMIT_PLAN.md
+commit-plan.md
+*.commit-plan.md
