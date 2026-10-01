@@ -12,13 +12,31 @@ export default function CabinTable() {
 
   if (isLoading) return <Spinner />;
 
-  const filterValue = searchParams.get("discount") || "all"
-
-  let filterredCabins;
   
+  
+  // Filter
+  const filterValue = searchParams.get("discount") || "all"
+  
+  let filterredCabins;
   if (filterValue === "all") filterredCabins = cabins;
   if (filterValue === "no-discount") filterredCabins = cabins.filter(cabin => cabin.discount === 0);
   if (filterValue === "with-discount") filterredCabins = cabins.filter(cabin => cabin.discount > 0);
+
+
+
+  //  SortBy
+  const sortBy = searchParams.get("sortBy") || "name-asc"
+  const [field, direction] = sortBy.split("-");
+  const modifier = direction === "asc" ? 1 : -1;
+  const sortedCabins = [...filterredCabins].sort((a, b) => {
+    const comparison =
+      typeof a[field] === "string"
+        ? a[field].localeCompare(b[field])
+        : a[field] - b[field];
+
+    return comparison * modifier;
+  });
+  
 
   return (
     <Table columns="0.6fr 1.8fr 2.2fr 1fr 1fr 1fr">
@@ -32,7 +50,7 @@ export default function CabinTable() {
       </Table.Header>
 
       <Table.Body
-        data={filterredCabins}
+        data={sortedCabins}
         render={(cabin) => <CabinRow key={cabin.id} cabin={cabin} />}
       />
     </Table>
