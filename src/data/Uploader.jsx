@@ -1,8 +1,8 @@
 import { isFuture, isPast, isToday } from 'date-fns';
 import { useState } from 'react';
-import supabase from 'services/supabase';
-import Button from 'ui/Button';
-import { subtractDates } from 'utils/helpers';
+import supabase from '../services/supabase';
+import Button from '../ui/Button';
+import { subtractDates } from '../utils/helpers';
 import { bookings } from './data-bookings';
 import { cabins } from './data-cabins';
 import { guests } from './data-guests';
@@ -25,7 +25,7 @@ async function deleteCabins() {
 }
 
 async function deleteBookings() {
-  const { error } = await supabase.from('bookings').delete().gt('id', 0);
+  const { error } = await supabase.from('booking').delete().gt('id', 0);
   if (error) console.log(error.message);
 }
 
@@ -39,22 +39,63 @@ async function createCabins() {
   if (error) console.log(error.message);
 }
 
+function getRequiredArrayItem(items, index, label) {
+  const item = items.at(index);
+
+  if (!item) {
+    throw new Error(`Missing ${label} for index ${index}.`);
+  }
+
+  return item;
+}
+
 async function createBookings() {
   // Bookings need a guestId and a cabinId. We can't tell Supabase IDs for each object, it will calculate them on its own. So it might be different for different people, especially after multiple uploads. Therefore, we need to first get all guestIds and cabinIds, and then replace the original IDs in the booking data with the actual ones from the DB
-  const { data: guestsIds } = await supabase
+  const { data: guestsIds, error: guestError } = await supabase
     .from('guests')
     .select('id')
     .order('id');
-  const allGuestIds = guestsIds.map((cabin) => cabin.id);
-  const { data: cabinsIds } = await supabase
+
+  if (guestError) throw new Error(`Failed to load guest IDs: ${guestError.message}`);
+
+  const allGuestIds = guestsIds.map((guest) => guest.id);
+
+  const { data: cabinsIds, error: cabinError } = await supabase
     .from('cabins')
     .select('id')
     .order('id');
+
+  if (cabinError) throw new Error(`Failed to load cabin IDs: ${cabinError.message}`);
+
   const allCabinIds = cabinsIds.map((cabin) => cabin.id);
 
+  if (!allGuestIds.length || !allCabinIds.length) {
+    throw new Error('Cannot create bookings: the guests or cabins table is empty.');
+  }
+
   const finalBookings = bookings.map((booking) => {
-    // Here relying on the order of cabins, as they don't have and ID yet
-    const cabin = cabins.at(booking.cabinId - 1);
+    // Here relying on the order of cabins, as they don't have an ID yet.
+    const cabin = getRequiredArrayItem(
+      cabins,
+      booking.cabinId - 1,
+      `cabin with original ID ${booking.cabinId}`
+    );
+
+    const guestId = allGuestIds.at(booking.guestId - 1);
+    const cabinId = allCabinIds.at(booking.cabinId - 1);
+
+    if (guestId == null) {
+      throw new Error(
+        `Missing guest ID mapping for booking guestId ${booking.guestId}.`
+      );
+    }
+
+    if (cabinId == null) {
+      throw new Error(
+        `Missing cabin ID mapping for booking cabinId ${booking.cabinId}.`
+      );
+    }
+
     const numNights = subtractDates(booking.endDate, booking.startDate);
     const cabinPrice = numNights * (cabin.regularPrice - cabin.discount);
     const extrasPrice = booking.hasBreakfast
@@ -62,17 +103,12 @@ async function createBookings() {
       : 0; // hardcoded breakfast price
     const totalPrice = cabinPrice + extrasPrice;
 
-    let status;
+    let status = 'unconfirmed';
     if (
       isPast(new Date(booking.endDate)) &&
       !isToday(new Date(booking.endDate))
     )
       status = 'checked-out';
-    if (
-      isFuture(new Date(booking.startDate)) ||
-      isToday(new Date(booking.startDate))
-    )
-      status = 'unconfirmed';
     if (
       (isFuture(new Date(booking.endDate)) ||
         isToday(new Date(booking.endDate))) &&
@@ -87,19 +123,19 @@ async function createBookings() {
       cabinPrice,
       extrasPrice,
       totalPrice,
-      guestId: allGuestIds.at(booking.guestId - 1),
-      cabinId: allCabinIds.at(booking.cabinId - 1),
+      guestId,
+      cabinId,
       status,
     };
   });
 
   console.log(finalBookings);
 
-  const { error } = await supabase.from('bookings').insert(finalBookings);
+  const { error } = await supabase.from('booking').insert(finalBookings);
   if (error) console.log(error.message);
 }
 
-export function Uploader() {
+export default function Uploader() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function uploadAll() {
@@ -138,9 +174,7 @@ export function Uploader() {
 
       <Button
         onClick={uploadAll}
-        // To prevent accidental clicks. Remove to run once!
         disabled={isLoading}
-        // disabled={true}
       >
         Upload ALL sample data
       </Button>
