@@ -114,9 +114,11 @@ function BookingDataBox({ booking }) {
     hasBreakfast,
     observations,
     isPaid,
-    guests: { fullName: guestName, email, country, countryFlag, nationalID },
-    cabins: { name: cabinName },
   } = booking;
+  const guest = booking.guests ?? {};
+  const cabinName = booking.cabins?.name ?? 'Cabin record unavailable';
+  const guestName = guest.fullName ?? 'Guest record unavailable';
+  const { email, country, countryFlag, nationalID } = guest;
 
   return (
     <StyledBookingDataBox>
@@ -129,11 +131,17 @@ function BookingDataBox({ booking }) {
         </div>
 
         <p>
-          {format(new Date(startDate), 'EEE, MMM dd yyyy')} (
-          {isToday(new Date(startDate))
-            ? 'Today'
-            : formatDistanceFromNow(startDate)}
-          ) &mdash; {format(new Date(endDate), 'EEE, MMM dd yyyy')}
+          {startDate && endDate ? (
+            <>
+              {format(new Date(startDate), 'EEE, MMM dd yyyy')} (
+              {isToday(new Date(startDate))
+                ? 'Today'
+                : formatDistanceFromNow(startDate)}
+              ) &mdash; {format(new Date(endDate), 'EEE, MMM dd yyyy')}
+            </>
+          ) : (
+            'Booking dates unavailable'
+          )}
         </p>
       </Header>
 
@@ -177,7 +185,11 @@ function BookingDataBox({ booking }) {
       </Section>
 
       <Footer>
-        <p>Booked {format(new Date(created_at), 'EEE, MMM dd yyyy, p')}</p>
+        <p>
+          {created_at
+            ? `Booked ${format(new Date(created_at), 'EEE, MMM dd yyyy, p')}`
+            : 'Booking date unavailable'}
+        </p>
       </Footer>
     </StyledBookingDataBox>
   );

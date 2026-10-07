@@ -60,21 +60,20 @@ const Amount = styled.div`
   font-weight: 500;
 `;
 
-function BookingRow({
-  booking: {
+function BookingRow({ booking }) {
+  const {
     id: bookingId,
-    created_at,
     startDate,
     endDate,
     numNights,
-    numGuests,
     totalPrice,
-    status,
-    guests: { fullName: guestName, email },
-    cabins: { name: cabinName },
-  },
-}) {
-  const { mutate: deleteBooking, isLoading: isDeleting } = useDeleteBooking();
+  } = booking;
+  const status = booking.status ?? 'unknown';
+  const guestName = booking.guests?.fullName ?? 'Guest record unavailable';
+  const guestEmail = booking.guests?.email ?? '';
+  const cabinName = booking.cabins?.name ?? 'Cabin record unavailable';
+
+  const { deleteBooking, isDeleting } = useDeleteBooking();
   const { mutate: checkout, isLoading: isCheckingOut } = useCheckout();
 
   const navigate = useNavigate();
@@ -93,23 +92,26 @@ function BookingRow({
 
       <Stacked>
         <span>{guestName}</span>
-        <span>{email}</span>
+        <span>{guestEmail}</span>
       </Stacked>
 
       <Stacked>
         <span>
-          {isToday(new Date(startDate))
-            ? 'Today'
-            : formatDistanceFromNow(startDate)}{' '}
-          &rarr; {numNights} night stay
+          {startDate
+            ? isToday(new Date(startDate))
+              ? 'Today'
+              : formatDistanceFromNow(startDate)
+            : 'Start date unavailable'}{' '}
+          &rarr; {numNights ?? '—'} night stay
         </span>
         <span>
-          {format(new Date(startDate), 'MMM dd yyyy')} &mdash;{' '}
-          {format(new Date(endDate), 'MMM dd yyyy')}
+          {startDate && endDate
+            ? `${format(new Date(startDate), 'MMM dd yyyy')} — ${format(new Date(endDate), 'MMM dd yyyy')}`
+            : 'Booking dates unavailable'}
         </span>
       </Stacked>
 
-      <Tag type={statusToTagName[status]}>{status.replace('-', ' ')}</Tag>
+      <Tag type={statusToTagName[status] ?? 'silver'}>{status.replace('-', ' ')}</Tag>
 
       <Amount>{formatCurrency(totalPrice)}</Amount>
 
